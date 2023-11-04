@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Personal Assistant Web App</h1>
+    <div id="conversation">
+        <p>Welcome! How can I assist you today?</p>
+    </div>
+    <input type="text" id="user-input" placeholder="Type your question or request...">
+    <button onclick="askAssistant()">Ask</button>
+    <script>
+        function askAssistant() {
+            const userInput = document.getElementById("user-input").value;
+            const conversation = document.getElementById("conversation");
+
+            // Display user's question/request
+            conversation.innerHTML += `<p>You: ${userInput}</p>`;
+
+            // Send user's input to the server for processing
+            fetch('/ask', {
+                method: 'POST',
+                body: new URLSearchParams({ user_input: userInput }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the assistant's response
+                conversation.innerHTML += `<p>Assistant: ${data.response}</p>`;
+            })
+            .catch(error => console.error('Error:', error));
+
+            // Clear the user input field
+            document.getElementById("user-input").value = "";
+        }
+    </script>
+</body>
+</html>
